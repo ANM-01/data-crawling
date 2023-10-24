@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 import pandas as pd
 from connection.engine_factory import EngineFactory
 
-app = FastAPI()
+myapi = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 query = """
@@ -20,7 +20,7 @@ def get_items(skip: int = 0, limit: int = 20):
     return df.to_dict(orient='records')
 
 
-@app.get("/")
+@myapi.get("/")
 async def root(skip: int = 0, limit: int = 20):
     items = get_items(skip=skip, limit=limit)
     return templates.TemplateResponse("items.html", {"request": {}, "items": items, "skip": skip})
@@ -28,4 +28,4 @@ async def root(skip: int = 0, limit: int = 20):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(myapi, host="0.0.0.0", port=8000)
