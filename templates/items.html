@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사주정보</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .item-content {
+            margin-left: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        div {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        a {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #007BFF;
+            border-radius: 5px;
+            margin: 0 5px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>사주정보</h1>
+    <ul>
+        {% for item in items %}
+        <li>
+            <strong>{{ item.animal_destiny_dt }}</strong>
+            <p class="item-content">{{ item.animal_destiny_ct }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        {% if skip >= 20 %}
+        <a href="/?skip={{ skip-20 }}&limit=20">Previous</a>
+        {% endif %}
+        <a href="/?skip={{ skip+20 }}&limit=20">Next</a>
+    </div>
+</body>
+</html>
