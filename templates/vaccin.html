@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaccin Info</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #dddddd;
+        }
+        th {
+            background-color: #2c3e50;
+            color: #ffffff;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #3498db;
+            color: #ffffff;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div style="margin-bottom: 20px;">
+    <button id="dogBtn">강아지</button>
+    <button id="catBtn">고양이</button>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>vaccin_info_id</th>
+            <th>animal_id</th>
+            <th>vaccin_dt</th>
+            <th>vaccin_div</th>
+            <th>vaccin_round</th>
+            <th>start_dt</th>
+            <th>end_dt</th>
+            <th>vaccin_ct1</th>
+            <th>vaccin_ct2</th>
+            <th>vaccin_ct3</th>
+        </tr>
+    </thead>
+    <tbody id="dataBody">
+        <!-- 여기에 데이터 삽입 -->
+    </tbody>
+</table>
+
+<script>
+    function fetchAnimalData(animalType) {
+        fetch(`/vaccin_${animalType}?skip=0&limit=20`)
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('dataBody');
+            tableBody.innerHTML = '';  // 기존 데이터 삭제
+            data.items.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.vaccin_info_id}</td>
+                    <td>${item.animal_id}</td>
+                    <td>${item.vaccin_dt}</td>
+                    <td>${item.vaccin_div}</td>
+                    <td>${item.vaccin_round}</td>
+                    <td>${item.start_dt}</td>
+                    <td>${item.end_dt}</td>
+                    <td>${item.vaccin_ct1}</td>
+                    <td>${item.vaccin_ct2}</td>
+                    <td>${item.vaccin_ct3}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        });
+    }
+
+    document.getElementById('dogBtn').addEventListener('click', () => fetchAnimalData('dog'));
+    document.getElementById('catBtn').addEventListener('click', () => fetchAnimalData('cat'));
+</script>
+
+</body>
+</html>

@@ -9,14 +9,13 @@ import datetime
 from datetime import timedelta
 import time
 import pandas as pd
-import calendar
 
 from connection.engine_factory import EngineFactory
 
 user_agent = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 "
               "Safari/537.36")
 
-search_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=%EA%B0%95%EC%95%84%EC%A7%80+%EC%98%88%EB%B0%A9%EC%A0%91%EC%A2%85%EC%8B%9C%EA%B8%B0"
+search_url = "https://search.naver.com/search.naver?where=nexearch&sm=top_hty&fbm=0&ie=utf8&query=강아지+예방접종시기"
 
 
 def configure_browser():
@@ -67,13 +66,18 @@ def extract_data_from_table(driver, date):
         except:
             return None  # 해당 a 태그가 없을 경우 None 반환
 
+    # 기초 또는 추가 정보를 가져오는 함수
+    def get_vaccine_type(tr_idx):
+        return "O" if tr_idx != 7 else "A"
+
 
     # tr[1] 데이터 수집
     date_range = driver.find_element(By.XPATH,
                                      f'//*[@id="main_pack"]/div[2]/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/table/tbody/tr[1]/td[3]').text
-    start_date, end_date = date_range.split('~')
+    start_date, end_date = [x.strip() for x in date_range.split('~')]
 
     row_data = [date,
+                get_vaccine_type(1),
                 driver.find_element(By.XPATH,
                                     f'//*[@id="main_pack"]/div[2]/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/table/tbody/tr[1]/td[2]').text,
                 start_date,
@@ -87,8 +91,9 @@ def extract_data_from_table(driver, date):
     for i in range(2, 7):
         date_range = driver.find_element(By.XPATH,
                                          f'//*[@id="main_pack"]/div[2]/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/table/tbody/tr[{i}]/td[2]').text
-        start_date, end_date = date_range.split('~')
+        start_date, end_date = [x.strip() for x in date_range.split('~')]
         row_data = [date,
+                    get_vaccine_type(i),
                     driver.find_element(By.XPATH,
                                         f'//*[@id="main_pack"]/div[2]/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/table/tbody/tr[{i}]/td[1]').text,
                     start_date,
@@ -103,6 +108,7 @@ def extract_data_from_table(driver, date):
     date_obj = driver.find_element(By.XPATH,
                                      f'//*[@id="main_pack"]/div[2]/div/div/div[2]/div/div/div[2]/div[2]/div[2]/div/table/tbody/tr[7]/td[2]').text
     row_data = [date,
+                get_vaccine_type(7),
                 None,
                 date_obj,
                 date_obj,
@@ -110,12 +116,13 @@ def extract_data_from_table(driver, date):
     a_texts = [safe_extract_a_text(7, 3, a_idx) for a_idx in range(1, 3)]
     row_data.extend(a_texts)
 
+    row_data.append(None)
     data_list.append(row_data)
 
     return data_list
 
 
-def get_data(engine):
+def get_data(engine, animal):
     service = Service(executable_path=ChromeDriverManager().install())
     chrome_options = configure_browser()
     try:
@@ -125,8 +132,8 @@ def get_data(engine):
         print(f"don't connect: {e}")
         return False
 
-    start_date = datetime.datetime(2021, 1, 1)
-    end_date = datetime.datetime(2021, 1, 2)
+    start_date = datetime.datetime(2022, 1, 1)
+    end_date = datetime.datetime(2022, 12, 31)
     delta = timedelta(days=1)
 
     while start_date <= end_date:
@@ -150,9 +157,14 @@ def get_data(engine):
         time.sleep(1)
 
         collected_data = extract_data_from_table(driver, start_date.strftime('%Y-%m-%d'))
-        df = pd.DataFrame(collected_data, columns=['일자', '접종 회차', '접종시작기간', '접종종료기간', '접종내용1', '접종내용2', '접종내용3'])
-        print(df)
-        # df.to_sql('your_table_name', engine, if_exists='append', index=False)
+        animal_id = pd.read_sql(f"select animal_id from petmate.pm_animal_base where animal_nm = '{animal}' ", con=engine)
+        animal_id = animal_id['animal_id'].iloc[0]
+
+        df = pd.DataFrame(collected_data, columns=['vaccin_dt', 'vaccin_div', 'vaccin_round',
+                                                   'start_dt', 'end_dt', 'vaccin_ct1', 'vaccin_ct2', 'vaccin_ct3'])
+        df.insert(0, 'animal_id', animal_id)
+        # print(df)
+        df.to_sql('pm_vaccin_info', engine, if_exists='append', index=False)
 
         start_date += delta
 
@@ -161,7 +173,8 @@ def get_data(engine):
 
 if __name__ == '__main__':
     engine = EngineFactory.create_engine_DEV_by('petmate')
-    result = get_data(engine)
+    animal = '강아지'
+    result = get_data(engine, animal)
     if result:
         print("Data collection and saving to DB completed successfully!")
     else:
