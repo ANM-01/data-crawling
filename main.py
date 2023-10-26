@@ -7,11 +7,18 @@ myapi = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 query = """
-    select * from petmate.pm_destiny_info;
+    select * from petmate.pm_destiny_info
 """
 vaccin_query = {
-    "dog": "select * from petmate.pm_vaccin_info where animal_id = 1;",
-    "cat": "select * from petmate.pm_vaccin_info where animal_id = 2;"  # 고양이 정보 예시
+    "dog": "select '강아지', vaccin_dt as 예방접종일, vaccin_div as 예방접종구분, vaccin_round as 예방접종회차,"
+           "start_dt as 시작일자, end_dt as 종료일자, vaccin_ct1 as 예방접종내용1, vaccin_ct2 as 예방접종내용2,"
+           "vaccin_ct3 as 예방접종내용3  "
+           "from petmate.pm_vaccin_info where animal_id = 1",
+
+    "cat": "select '고양이', vaccin_dt as 예방접종일, vaccin_div as 예방접종구분, vaccin_round as 예방접종회차,"
+           "start_dt as 시작일자, end_dt as 종료일자, vaccin_ct1 as 예방접종내용1, vaccin_ct2 as 예방접종내용2,"
+           "vaccin_ct3 as 예방접종내용3  "
+           "from petmate.pm_vaccin_info where animal_id = 2"  # 고양이 정보 예시
 }
 
 
@@ -38,8 +45,9 @@ async def root(skip: int = 0, limit: int = 20):
 
 @myapi.get("/vaccin_{animal_type}")
 async def vaccin(animal_type: str, skip: int = 0, limit: int = 20):
-    items = get_vaccin(animal_type, skip, limit)
-    return templates.TemplateResponse("vaccin.html", {"request": {}, "items": items, "skip": skip})
+    vaccins = get_vaccin(animal_type, skip, limit)
+    return templates.TemplateResponse("vaccin.html", {"request": {}, "vaccins": vaccins, "skip": skip})
+
 
 
 if __name__ == "__main__":

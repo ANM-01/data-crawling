@@ -1,102 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaccin Info</title>
+    <title>Vaccin Information</title>
     <style>
-        body {
+        /* Basic reset */
+        body, h1, h2, h3, h4, h5, h6, p, table, th, td {
+            margin: 0;
+            padding: 0;
             font-family: 'Arial', sans-serif;
-            padding: 20px;
-            background-color: #f4f4f4;
         }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            background-color: #ffffff;
+
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        /* Container */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
         th, td {
-            padding: 8px 12px;
-            border: 1px solid #dddddd;
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
         }
+
         th {
-            background-color: #2c3e50;
-            color: #ffffff;
+            background-color: #f2f2f2;
         }
+
         tr:hover {
             background-color: #f5f5f5;
         }
-        button {
+
+        /* Button styles */
+        .btn {
+            display: inline-block;
             padding: 10px 20px;
-            border: none;
-            background-color: #3498db;
-            color: #ffffff;
-            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
             margin-right: 10px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 0 5px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
             border-radius: 5px;
         }
-        button:hover {
-            background-color: #2980b9;
+
+        .pagination a:hover {
+            background-color: #0056b3;
         }
+
+        .pagination .disabled {
+            background-color: #ccc;
+            pointer-events: none;
+        }
+
+
+
     </style>
 </head>
+
 <body>
+    <div class="container">
+        <h2>예방접종 정보 선택</h2>
 
-<div style="margin-bottom: 20px;">
-    <button id="dogBtn">강아지</button>
-    <button id="catBtn">고양이</button>
-</div>
+        <!-- Animal Selection Buttons -->
+        <div style="margin-bottom: 20px;">
+            <a href="/vaccin_dog" class="btn">강아지</a>
+            <a href="/vaccin_cat" class="btn">고양이</a>
+        </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>vaccin_info_id</th>
-            <th>animal_id</th>
-            <th>vaccin_dt</th>
-            <th>vaccin_div</th>
-            <th>vaccin_round</th>
-            <th>start_dt</th>
-            <th>end_dt</th>
-            <th>vaccin_ct1</th>
-            <th>vaccin_ct2</th>
-            <th>vaccin_ct3</th>
-        </tr>
-    </thead>
-    <tbody id="dataBody">
-        <!-- 여기에 데이터 삽입 -->
-    </tbody>
-</table>
+        <table>
+            <thead>
+                <tr>
+                    <th>동물 종류</th>
+                    <th>예방접종일</th>
+                    <th>예방접종구분</th>
+                    <th>예방접종회차</th>
+                    <th>시작일자</th>
+                    <th>종료일자</th>
+                    <th>예방접종내용1</th>
+                    <th>예방접종내용2</th>
+                    <th>예방접종내용3</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vaccin in vaccins %}
+                <tr>
+                    <td>{{ vaccin['강아지'] }}</td>
+                    <td>{{ vaccin['예방접종일'] }}</td>
+                    <td>{{ vaccin['예방접종구분'] }}</td>
+                    <td>{{ vaccin['예방접종회차'] }}</td>
+                    <td>{{ vaccin['시작일자'] }}</td>
+                    <td>{{ vaccin['종료일자'] }}</td>
+                    <td>{{ vaccin['예방접종내용1'] }}</td>
+                    <td>{{ vaccin['예방접종내용2'] }}</td>
+                    <td>{{ vaccin['예방접종내용3'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-<script>
-    function fetchAnimalData(animalType) {
-        fetch(`/vaccin_${animalType}?skip=0&limit=20`)
-        .then(response => response.json())
-        .then(data => {
-            const tableBody = document.getElementById('dataBody');
-            tableBody.innerHTML = '';  // 기존 데이터 삭제
-            data.items.forEach(item => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${item.vaccin_info_id}</td>
-                    <td>${item.animal_id}</td>
-                    <td>${item.vaccin_dt}</td>
-                    <td>${item.vaccin_div}</td>
-                    <td>${item.vaccin_round}</td>
-                    <td>${item.start_dt}</td>
-                    <td>${item.end_dt}</td>
-                    <td>${item.vaccin_ct1}</td>
-                    <td>${item.vaccin_ct2}</td>
-                    <td>${item.vaccin_ct3}</td>
-                `;
-                tableBody.appendChild(row);
-            });
-        });
-    }
-
-    document.getElementById('dogBtn').addEventListener('click', () => fetchAnimalData('dog'));
-    document.getElementById('catBtn').addEventListener('click', () => fetchAnimalData('cat'));
-</script>
-
+        <!-- 페이징 버튼들 -->
+        <div class="pagination">
+            <a href="?skip={{ skip - 20 }}&limit=20" {% if skip == 0 %}class="disabled"{% endif %}>&laquo; 이전</a>
+            <a href="?skip={{ skip + 20 }}&limit=20">다음 &raquo;</a>
+        </div>
+    </div>
 </body>
+
 </html>

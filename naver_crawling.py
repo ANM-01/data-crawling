@@ -132,8 +132,8 @@ def get_data(engine, animal):
         print(f"don't connect: {e}")
         return False
 
-    start_date = datetime.datetime(2022, 1, 1)
-    end_date = datetime.datetime(2022, 12, 31)
+    start_date = datetime.datetime(2023, 1, 1)
+    end_date = datetime.datetime(2023, 12, 31)
     delta = timedelta(days=1)
 
     while start_date <= end_date:
