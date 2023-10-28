@@ -10,12 +10,12 @@ query = """
     select * from petmate.pm_destiny_info
 """
 vaccin_query = {
-    "dog": "select '강아지', vaccin_dt as 예방접종일, vaccin_div as 예방접종구분, vaccin_round as 예방접종회차,"
+    "dog": "select '강아지' as animal_type, vaccin_dt as 예방접종일, vaccin_div as 예방접종구분, vaccin_round as 예방접종회차,"
            "start_dt as 시작일자, end_dt as 종료일자, vaccin_ct1 as 예방접종내용1, vaccin_ct2 as 예방접종내용2,"
            "vaccin_ct3 as 예방접종내용3  "
            "from petmate.pm_vaccin_info where animal_id = 1",
 
-    "cat": "select '고양이', vaccin_dt as 예방접종일, vaccin_div as 예방접종구분, vaccin_round as 예방접종회차,"
+    "cat": "select '고양이' as animal_type, vaccin_dt as 예방접종일, vaccin_div as 예방접종구분, vaccin_round as 예방접종회차,"
            "start_dt as 시작일자, end_dt as 종료일자, vaccin_ct1 as 예방접종내용1, vaccin_ct2 as 예방접종내용2,"
            "vaccin_ct3 as 예방접종내용3  "
            "from petmate.pm_vaccin_info where animal_id = 2"  # 고양이 정보 예시
