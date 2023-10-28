@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 import pandas as pd
 from connection.engine_factory import EngineFactory
+from fastapi import Request
 
 myapi = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -39,14 +40,14 @@ def get_vaccin(animal_type, skip=0, limit=20):
 
 
 @myapi.get("/")
-async def root(skip: int = 0, limit: int = 20):
+async def root(request: Request, skip: int = 0, limit: int = 20):
     items = get_items(skip=skip, limit=limit)
-    return templates.TemplateResponse("items.html", {"request": {}, "items": items, "skip": skip})
+    return templates.TemplateResponse("items.html", {"request": request, "items": items, "skip": skip})
 
 @myapi.get("/vaccin_{animal_type}")
-async def vaccin(animal_type: str, skip: int = 0, limit: int = 20):
+async def vaccin(request: Request, animal_type: str, skip: int = 0, limit: int = 20):
     vaccins = get_vaccin(animal_type, skip, limit)
-    return templates.TemplateResponse("vaccin.html", {"request": {}, "vaccins": vaccins, "skip": skip})
+    return templates.TemplateResponse("vaccin.html", {"request": request, "vaccins": vaccins, "skip": skip})
 
 
 
