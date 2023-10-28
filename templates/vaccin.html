@@ -1,10 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "base.html" %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vaccin Information</title>
+{% block title %}
+	예방접종 정보
+{% endblock %}
+
+{% block content %}
     <style>
         /* Basic reset */
         body, h1, h2, h3, h4, h5, h6, p, table, th, td {
@@ -144,6 +144,4 @@
             <a href="?skip={{ skip + 20 }}&limit=20">다음 &raquo;</a>
         </div>
     </div>
-</body>
-
-</html>
+{% endblock %}
